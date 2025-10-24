@@ -14,7 +14,7 @@ node_modules: package.json
 
 # Phony Targets
 start: node_modules
-	BROWSER=none yarn run start
+	BROWSER=none yarn run dev
 
 check: node_modules
 	yarn run eslint -f unix src/
