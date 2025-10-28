@@ -1,11 +1,19 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
-import { Box, Button, TextField, CircularProgress, InputAdornment, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  CircularProgress,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../firebase';
-import styles from "../../styles/page.module.css";
+import { auth } from "@/firebase";
+import styles from "styles/page.module.css";
+import useCurrentUser from "hooks/useCurrentUser";
 
 
 const DEFAULT_FORM_STATE = {
@@ -18,6 +26,10 @@ const DEFAULT_FORM_STATE = {
 export default function Login() {
   const [formState, setFormState] = useState(DEFAULT_FORM_STATE);
   const [loading, setLoading] = useState(false);
+
+  const currentUser = useCurrentUser();
+
+
 
   const changeHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +57,7 @@ export default function Login() {
         formState.password
       );
       console.log("Login successful");
+      window.location.href = '/';
     } catch (e) {
       console.error("Login failed:", e);
       setFormState({ ...formState, hasError: true });
@@ -58,6 +71,13 @@ export default function Login() {
     return formState.hasError;
   }, [formState]);
 
+  if (currentUser.loading) {
+    return null;
+  }
+  if (currentUser.user) {
+    window.location.href = '/';
+    return null;
+  }
   return (
     <Box
       sx={{
@@ -122,18 +142,20 @@ export default function Login() {
             }}
             variant="outlined"
             required={true}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={toggleShowPassword} size="large">
-                    {formState.showPassword ? (
-                      <Visibility />
-                    ) : (
-                      <VisibilityOff />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={toggleShowPassword} size="large">
+                      {formState.showPassword ? (
+                        <Visibility />
+                      ) : (
+                        <VisibilityOff />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
         </Box>
@@ -168,8 +190,7 @@ export default function Login() {
               fontSize: 16,
             }}
           >
-            There was a login issue. Please try again or contact your Jia
-            admin.
+            There was a login issue. Please try again or contact your Altitude admin.
           </Box>
         </Box>
       )}

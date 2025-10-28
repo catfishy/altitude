@@ -26,7 +26,14 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["./*"],
+      "components/*": ["./components/*"],
+      "hooks/*": ["./hooks/*"],
+      "styles/*": ["./styles/*"],
+      "utils/*": ["./utils/*"]
+    }
   },
   "include": [
     "src",

@@ -1,10 +1,10 @@
 "use client";
+import Head from "next/head";
 import Image from "next/image";
 import styles from "styles/page.module.css";
 import useCurrentUser from "hooks/useCurrentUser";
 
 export default function Home() {
-
   const currentUser = useCurrentUser();
 
   if (currentUser.loading) {
@@ -12,70 +12,39 @@ export default function Home() {
   }
 
   if (!currentUser.user) {
-    window.location.href = '/login';
+    window.location.href = "/login";
     return null;
   }
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
+    <>
+      <Head>
+        <title>{currentUser.user.displayName}</title>
+        <meta name="description" content={currentUser.user.email || ''} />
+      </Head>
+      <div className={styles.page}>
+        <main className={styles.main}>
+          <div className={styles.ctas}>
+            Customer Content
+          </div>
+        </main>
+        <footer className={styles.footer}>
           <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+            href="https://www.ahrpc.ca/"
             target="_blank"
             rel="noopener noreferrer"
           >
             <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              aria-hidden
+              src="/globe.svg"
+              alt="Globe icon"
+              width={16}
+              height={16}
             />
-            Deploy now
+            Go home →
           </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://www.ahrpc.ca/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go home →
-        </a>
-      </footer>          
-    </div>
+        </footer>
+      </div>
+    </>
   );
 }
