@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase";
+import { auth } from "@/util/firebase";
 import styles from "styles/page.module.css";
 import useCurrentUser from "hooks/useCurrentUser";
 
@@ -28,8 +28,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const currentUser = useCurrentUser();
-
-
 
   const changeHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

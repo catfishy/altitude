@@ -9,6 +9,8 @@ export default function Home() {
 
   if (currentUser.loading) {
     return null;
+  } else {
+    console.log("Current User:", currentUser.user);
   }
 
   if (!currentUser.user) {
