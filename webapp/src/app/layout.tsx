@@ -4,18 +4,10 @@ import { signOut } from "firebase/auth";
 import { useCallback } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SnackbarProvider } from "notistack";
-import MenuIcon from "@mui/icons-material/Menu";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 import DarkTheme from "theme";
-import {
-  Toolbar,
-  Box,
-  AppBar,
-  Button,
-  Typography,
-  IconButton,
-} from "@mui/material";
 import useCurrentUser from "hooks/useCurrentUser";
+import AltitudeToolbar from "components/AltitudeToolbar";
 
 /* eslint-disable */
 import { auth } from "@/util/firebase"; // Initializes Firebase
@@ -39,13 +31,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const currentUser = useCurrentUser();
-  const handleLogout = useCallback(async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  }, []);
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
@@ -55,32 +40,7 @@ export default function RootLayout({
             anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
           >
             {currentUser.user && (
-              <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static">
-                  <Toolbar>
-                    <IconButton
-                      size="large"
-                      edge="start"
-                      color="inherit"
-                      aria-label="menu"
-                      sx={{ mr: 2 }}
-                    >
-                      <MenuIcon />
-                    </IconButton>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{ flexGrow: 1 }}
-                    >
-                      Tours
-                    </Typography>
-
-                    <Button color="inherit" onClick={handleLogout}>
-                      Log Out
-                    </Button>
-                  </Toolbar>
-                </AppBar>
-              </Box>
+              <AltitudeToolbar />
             )}
             {children}
           </SnackbarProvider>

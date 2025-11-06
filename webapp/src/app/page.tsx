@@ -3,17 +3,19 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "styles/page.module.css";
 import useCurrentUser from "hooks/useCurrentUser";
+import useCustomerTours from "hooks/useCustomerTours";
 
 export default function Home() {
-  const currentUser = useCurrentUser();
-
-  if (currentUser.loading) {
+  const {user, loading: userLoading} = useCurrentUser();
+  const {tours, loading: toursLoading} = useCustomerTours(user?.customer_id || null)
+  
+  if (userLoading || toursLoading) {
     return null;
   } else {
-    console.log("Current User:", currentUser.user);
+    console.log("Current User:", user);
   }
 
-  if (!currentUser.user) {
+  if (!user) {
     window.location.href = "/login";
     return null;
   }
@@ -21,13 +23,25 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{currentUser.user.displayName}</title>
-        <meta name="description" content={currentUser.user.email || ''} />
+        <title>{user.name}</title>
+        <meta name="description" content={user.email || ''} />
       </Head>
       <div className={styles.page}>
         <main className={styles.main}>
           <div className={styles.ctas}>
-            Customer Content
+            {tours?.map((tour, index) => (
+              <div key={index}>
+                {tour.embed_url && (
+                  <iframe 
+                    src={tour.embed_url} 
+                    width="100%" 
+                    height="400"
+                    frameBorder="0"
+                    allowFullScreen
+                  />
+                )}
+              </div>
+            ))}
           </div>
         </main>
         <footer className={styles.footer}>
