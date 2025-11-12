@@ -7,6 +7,7 @@ export type TourDocument = {
   id: string;
   customer_id: string;
   embed_url: string;
+  thumbnail: string;
 };
 
 const useCustomerTours = (customer_id: string | null) => {

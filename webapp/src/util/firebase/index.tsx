@@ -2,6 +2,7 @@ import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
+import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -31,8 +32,9 @@ isSupported()
 // Initialize Firebase services
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 const functions = region
   ? getFunctions(firebaseApp, region)
   : getFunctions(firebaseApp);
 
-export { firebaseApp, auth, db, functions };
+export { firebaseApp, auth, db, functions, storage };

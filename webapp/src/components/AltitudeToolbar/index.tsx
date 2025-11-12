@@ -24,30 +24,34 @@ export default function AltitudeToolbar() {
   }, []);
   return (
     <Box sx={{ flexGrow: 1 }}>
-    <AppBar position="static">
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{ backgroundColor: "#ffffff", color: "#000000" }}
+      >
         <Toolbar>
-        <IconButton
+          {/* <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
-        >
+          >
             <MenuIcon />
-        </IconButton>
-        <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1 }}
-        >
-            CTFN Tours
-        </Typography>
+          </IconButton> */}
 
-        <Button color="inherit" onClick={handleLogout}>
+          {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            CTFN Tours
+          </Typography> */}
+          <Button
+            color="inherit"
+            onClick={handleLogout}
+            sx={{ color: "#000000" }}
+          >
             Log Out
-        </Button>
+          </Button>
         </Toolbar>
-    </AppBar>
+      </AppBar>
     </Box>
   );
 }

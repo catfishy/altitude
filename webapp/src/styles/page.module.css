@@ -25,6 +25,20 @@
     --button-primary-hover: #ccc;
     --button-secondary-hover: #1a1a1a;
   }
+
+  .modalContent {
+    background: rgba(24, 24, 24, 0.95);
+    color: #ffffff;
+  }
+
+  .thumbnailPlaceholder {
+    color: rgba(var(--gray-rgb), 0.75);
+  }
+
+  .modalFullPageButton {
+    background: rgba(32, 32, 32, 0.85);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .main {
@@ -59,6 +73,144 @@
 .ctas {
   display: flex;
   gap: 16px;
+}
+
+.tourGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+  width: min(100%, 1200px);
+}
+
+.tourCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.thumbnailButton {
+  width: 100%;
+  border: none;
+  padding: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--gray-alpha-100);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.thumbnailButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.thumbnailButton:focus-visible {
+  outline: 3px solid var(--button-primary-hover);
+  outline-offset: 4px;
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
+.thumbnailPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 225px;
+  padding: 16px;
+  background: var(--gray-alpha-100);
+  color: rgba(var(--gray-rgb), 0.65);
+  text-align: center;
+  font-size: 14px;
+}
+
+.tourName {
+  font-weight: 600;
+  text-align: center;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: rgba(var(--gray-rgb), 0.7);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  width: min(960px, 100%);
+  background: var(--background, #ffffff);
+  color: var(--foreground, #13161a);
+  border-radius: 16px;
+  padding: 48px 24px 24px;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
+}
+
+.modalActions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.modalFullPageButton {
+  border: 1px solid rgba(var(--gray-rgb), 0.25);
+  background: rgba(255, 255, 255, 0.85);
+  color: inherit;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.modalFullPageButton:focus-visible {
+  outline: 3px solid var(--button-primary-hover);
+  outline-offset: 2px;
+}
+
+.modalClose {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modalBody {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modalIframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .ctas a {
@@ -123,6 +275,17 @@ a.secondary {
     text-decoration: underline;
     text-underline-offset: 4px;
   }
+
+  .thumbnailButton:hover:not(:disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .modalFullPageButton:hover {
+    background: var(--button-secondary-hover);
+    border-color: transparent;
+    transform: translateY(-1px);
+  }
 }
 
 @media (max-width: 600px) {
@@ -157,6 +320,15 @@ a.secondary {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+  }
+
+  .tourGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .modalContent {
+    padding: 40px 16px 16px;
   }
 }
 
