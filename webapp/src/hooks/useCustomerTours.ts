@@ -8,6 +8,7 @@ export type TourDocument = {
   customer_id: string;
   embed_url: string;
   thumbnail: string;
+  name: string;
 };
 
 const useCustomerTours = (customer_id: string | null) => {

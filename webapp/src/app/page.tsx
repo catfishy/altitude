@@ -1,87 +1,44 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { getDownloadURL, ref } from "firebase/storage";
-
+import { useRouter } from "next/navigation";
+import {
+  CircularProgress,
+  IconButton,
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+  Grid,
+} from "@mui/material";
+// import OpenInFullIcon from "@mui/icons-material/OpenInFull";
+import CloseIcon from "@mui/icons-material/Close";
 import styles from "styles/page.module.css";
 import useCurrentUser from "hooks/useCurrentUser";
 import useCustomerTours, { TourDocument } from "hooks/useCustomerTours";
-import { storage } from "@/util/firebase";
-
-type TourWithMetadata = TourDocument & {
-  name?: string | null;
-  thumbnail?: string | null;
-};
+import useTourThumbnails from "@/hooks/useTourThumbnails";
+import useCustomer from "@/hooks/useCustomer";
 
 export default function Home() {
+  const router = useRouter();
+  const { customer, loading: customerLoading } = useCustomer();
   const { user, loading: userLoading } = useCurrentUser();
-  const { tours, loading: toursLoading } = useCustomerTours(user?.customer_id || null);
-  const [thumbnailUrls, setThumbnailUrls] = useState<Record<string, string>>({});
-  const [selectedTour, setSelectedTour] = useState<TourWithMetadata | null>(null);
-
-  useEffect(() => {
-    if (!tours || tours.length === 0) {
-      setThumbnailUrls({});
-      return;
-    }
-
-    let cancelled = false;
-    const toursWithMetadata = tours as TourWithMetadata[];
-    const thumbnailKeys = Array.from(
-      new Set(
-        toursWithMetadata
-          .map((tour) => tour.thumbnail)
-          .filter((key): key is string => Boolean(key))
-      )
-    );
-
-    if (thumbnailKeys.length === 0) {
-      setThumbnailUrls({});
-      return;
-    }
-
-    const loadThumbnails = async () => {
-      try {
-        const entries = await Promise.all(
-          thumbnailKeys.map(async (thumbnailName) => {
-            try {
-              console.log(`Fetching thumbnail: ${thumbnailName}`);
-              const url = await getDownloadURL(ref(storage, `thumbnails/${thumbnailName}`));
-              return [thumbnailName, url] as const;
-            } catch (error) {
-              console.error(`Failed to fetch thumbnail ${thumbnailName}:`, error);
-              return null;
-            }
-          })
-        );
-
-        if (cancelled) {
-          return;
-        }
-
-        const validEntries = entries.filter(
-          (entry): entry is readonly [string, string] => entry !== null
-        );
-
-        const nextUrls: Record<string, string> = {};
-        validEntries.forEach(([key, value]) => {
-          nextUrls[key] = value;
-        });
-
-        setThumbnailUrls(nextUrls);
-      } catch (error) {
-        if (!cancelled) {
-          console.error("Error loading thumbnails:", error);
-        }
-      }
-    };
-
-    loadThumbnails();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [tours]);
+  const { tours, loading: toursLoading } = useCustomerTours(
+    user?.customer_id || null
+  );
+  const { thumbnailUrls, loading: thumbnailsLoading } = useTourThumbnails(
+    user?.customer_id || null
+  );
+  const [selectedTour, setSelectedTour] = useState<TourDocument | null>(null);
+  const loading =
+    userLoading ||
+    toursLoading ||
+    thumbnailsLoading ||
+    customerLoading ||
+    !user ||
+    !customer ||
+    tours.length === 0;
 
   useEffect(() => {
     if (!selectedTour) {
@@ -98,7 +55,7 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedTour]);
 
-  const handleThumbnailClick = useCallback((tour: TourWithMetadata) => {
+  const handleThumbnailClick = useCallback((tour: TourDocument) => {
     if (!tour.embed_url) {
       return;
     }
@@ -109,85 +66,82 @@ export default function Home() {
     setSelectedTour(null);
   }, []);
 
-  const handleOpenFullPage = useCallback(() => {
-    if (!selectedTour?.embed_url) {
-      return;
+  useEffect(() => {
+    if (!userLoading && !user) {
+      router.replace("/login");
     }
-    window.open(selectedTour.embed_url, "_blank", "noopener,noreferrer");
-  }, [selectedTour?.embed_url]);
+  }, [router, user, userLoading]);
 
-  if (userLoading || toursLoading) {
-    return null;
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <main className={styles.main}>
+          <CircularProgress />
+        </main>
+      </div>
+    );
   }
-
-  if (!user) {
-    window.location.href = "/login";
-    return null;
-  }
-
-  const toursWithMetadata = (tours as TourWithMetadata[]) ?? [];
 
   return (
     <>
       <div className={styles.page}>
         <main className={styles.main}>
-          <div className={styles.tourGrid}>
-            {toursWithMetadata.length === 0 ? (
-              <p className={styles.emptyState}>No tours available yet.</p>
-            ) : (
-              toursWithMetadata.map((tour, index) => {
-                const thumbnailKey = tour.thumbnail ?? "";
-                const thumbnailUrl = thumbnailKey ? thumbnailUrls[thumbnailKey] : undefined;
-                const cardKey = tour.id ?? `tour-${index}`;
-
-                return (
-                  <div className={styles.tourCard} key={cardKey}>
-                    <button
-                      type="button"
-                      className={styles.thumbnailButton}
-                      onClick={() => handleThumbnailClick(tour)}
-                      disabled={!tour.embed_url}
-                    >
+          <Grid container spacing={2}>
+            <Grid size={{xs: 12}} textAlign="center">
+              <Typography variant="h4" gutterBottom>{customer.name} Virtual Tours</Typography>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            {tours.map((tour, index) => {
+              const thumbnailUrl = thumbnailUrls.find(
+                (thumbnail) => thumbnail.tour_id === tour.id
+              )?.thumbnail_url;
+              const cardKey = tour.id ?? `tour-${index}`;
+              return (
+                <Grid size={{xs: 12, sm: 4, md: 3 }} key={cardKey}>
+                  <Card className={styles.tourCard}>
+                    <CardActionArea onClick={() => handleThumbnailClick(tour)}>
                       {thumbnailUrl ? (
-                        <Image
-                          src={thumbnailUrl}
-                          alt={tour.name ? `${tour.name} thumbnail` : "Tour thumbnail"}
-                          width={400}
-                          height={225}
-                          className={styles.thumbnailImage}
-                          loading={index === 0 ? "eager" : "lazy"}
-                          sizes="(max-width: 768px) 100vw, 400px"
-                          unoptimized
-                        />
+                        <div className={styles.thumbnailWrapper}>
+                          <Image
+                            src={thumbnailUrl}
+                            alt={
+                              tour.name
+                                ? `${tour.name} thumbnail`
+                                : "Tour thumbnail"
+                            }
+                            width={400}
+                            height={225}
+                            className={styles.thumbnailImage}
+                            loading={index === 0 ? "eager" : "lazy"}
+                            sizes="(max-width: 768px) 100vw, 400px"
+                            unoptimized
+                          />
+                        </div>
                       ) : (
                         <div className={styles.thumbnailPlaceholder}>
                           <span>Thumbnail unavailable</span>
                         </div>
                       )}
-                    </button>
-                    {tour.name && <span className={styles.tourName}>{tour.name}</span>}
-                  </div>
-                );
-              })
-            )}
-          </div>
+                      {tour.name && (
+                        <CardContent>
+                          <Typography
+                            variant="body2"
+                            color="text.primary"
+                            className={styles.tourName}
+                          >
+                            {tour.name}
+                          </Typography>
+                        </CardContent>
+                      )}
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
         </main>
-        <footer className={styles.footer}>
-          <a
-            href="https://www.ahrpc.ca/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/globe.svg"
-              alt="Globe icon"
-              width={16}
-              height={16}
-            />
-            Go home →
-          </a>
-        </footer>
+        <footer className={styles.footer}></footer>
       </div>
 
       {selectedTour && selectedTour.embed_url && (
@@ -202,25 +156,25 @@ export default function Home() {
             className={styles.modalContent}
             onClick={(event) => event.stopPropagation()}
           >
-            <div className={styles.modalActions}>
-              <button
-                type="button"
-                className={styles.modalFullPageButton}
+            <Box className={styles.modalActions} sx={{ mr: 1 }}>
+              {/* <IconButton
                 onClick={handleOpenFullPage}
                 aria-label="Open tour in full page"
+                color="inherit"
+                size="small"
               >
-                Full page
-              </button>
-              <button
-                type="button"
-                aria-label="Close tour preview"
-                className={styles.modalClose}
+                <OpenInFullIcon fontSize="small" />
+              </IconButton> */}
+              <IconButton
                 onClick={handleCloseModal}
+                aria-label="Close tour preview"
+                color="inherit"
+                size="small"
               >
-                ×
-              </button>
-            </div>
-            <div className={styles.modalBody}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            <Box className={styles.modalBody}>
               <iframe
                 src={selectedTour.embed_url}
                 title={selectedTour.name ?? "Tour preview"}
@@ -228,7 +182,7 @@ export default function Home() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />
-            </div>
+            </Box>
           </div>
         </div>
       )}

@@ -1,20 +1,16 @@
 "use client";
 import { signOut } from "firebase/auth";
 import { useCallback } from "react";
-import MenuIcon from "@mui/icons-material/Menu";
 import {
   Toolbar,
   Box,
   AppBar,
   Button,
-  Typography,
-  IconButton,
+  Stack,
 } from "@mui/material";
 import { auth } from "@/util/firebase";
-import useCurrentUser from "hooks/useCurrentUser";
 
 export default function AltitudeToolbar() {
-  const currentUser = useCurrentUser();
   const handleLogout = useCallback(async () => {
     try {
       await signOut(auth);
@@ -29,27 +25,25 @@ export default function AltitudeToolbar() {
         elevation={0}
         sx={{ backgroundColor: "#ffffff", color: "#000000" }}
       >
-        <Toolbar>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
-
-          {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            CTFN Tours
-          </Typography> */}
-          <Button
-            color="inherit"
-            onClick={handleLogout}
-            sx={{ color: "#000000" }}
-          >
-            Log Out
-          </Button>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Button
+              component="a"
+              href="https://www.ahrpc.ca/"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ color: "#000000", fontWeight: 600 }}
+            >
+              About AHRPC
+            </Button>
+            <Button
+              color="inherit"
+              onClick={handleLogout}
+              sx={{ color: "#000000" }}
+            >
+              Log Out
+            </Button>
+          </Stack>
         </Toolbar>
       </AppBar>
     </Box>

@@ -75,18 +75,18 @@
   gap: 16px;
 }
 
-.tourGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 24px;
-  width: min(100%, 1200px);
-}
-
 .tourCard {
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: center;
+}
+
+.thumbnailWrapper {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  display: block;
 }
 
 .thumbnailButton {
@@ -100,23 +100,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.thumbnailButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.thumbnailButton:focus-visible {
-  outline: 3px solid var(--button-primary-hover);
-  outline-offset: 4px;
-}
-
-.thumbnailImage {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  aspect-ratio: 16 / 9;
-}
+@media (hover: hover) and (pointer: fine) {
 
 .thumbnailPlaceholder {
   display: flex;
@@ -281,11 +265,7 @@ a.secondary {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
   }
 
-  .modalFullPageButton:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-    transform: translateY(-1px);
-  }
+}
 }
 
 @media (max-width: 600px) {
@@ -323,7 +303,7 @@ a.secondary {
   }
 
   .tourGrid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 16px;
   }
 
