@@ -10,12 +10,15 @@ import {
   CardContent,
   Typography,
   Grid,
+  IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import CloseIcon from "@mui/icons-material/Close";
 // import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-// import CloseIcon from "@mui/icons-material/Close";
 import styles from "styles/page.module.css";
 import useCurrentUser from "hooks/useCurrentUser";
 import useCustomerTours, { TourDocument } from "hooks/useCustomerTours";
@@ -74,6 +77,13 @@ export default function Home() {
     }
   }, [router, user, userLoading]);
 
+  // detect small screens to show the dialog full-screen
+  const theme = useTheme();
+  const isSmallWidth = useMediaQuery(theme.breakpoints.down("sm"));
+  // treat phones in landscape (short viewport height) as small screens too
+  const isPhoneLandscape = useMediaQuery("(orientation: landscape) and (max-height: 600px)");
+  const fullScreenDialog = isSmallWidth || isPhoneLandscape;
+
   if (loading) {
     return (
       <div className={styles.page} style={{ alignItems: "center", justifyContent: "center", minHeight: "100vh", display: "flex" }}>
@@ -86,7 +96,7 @@ export default function Home() {
 
   return (
     <>
-      <div className={styles.page}>
+      <Box className={styles.page}>
         <main className={styles.main}>
           <Grid container spacing={2} className={styles.customerContent}>
             <Grid size={{xs: 12}} textAlign="center">
@@ -97,7 +107,7 @@ export default function Home() {
                     alt={customer.name ? `${customer.name} logo` : 'Customer logo'}
                     width={360}
                     height={240}
-                    style={{ objectFit: 'scale-down', borderRadius: 8 }}
+                    className={styles.customerLogoImage}
                     priority
                     unoptimized
                   />
@@ -158,7 +168,7 @@ export default function Home() {
           </Grid>
         </main>
         <footer className={styles.footer}></footer>
-      </div>
+      </Box>
 
       {selectedTour && selectedTour.embed_url && (
         <Dialog
@@ -166,22 +176,50 @@ export default function Home() {
           onClose={handleCloseModal}
           aria-labelledby="tour-preview-title"
           fullWidth
-          maxWidth="lg"
+          fullScreen={fullScreenDialog}
+          maxWidth={fullScreenDialog ? false : "lg"}
         >
           <DialogTitle id="tour-preview-title" sx={{ display: 'none' }}>
             {selectedTour.name ?? 'Tour preview'}
           </DialogTitle>
-          <DialogContent>
-            {/* <Box sx={{ mr: 1 }}>
-              <IconButton
-                onClick={handleCloseModal}
-                aria-label="Close tour preview"
-                color="inherit"
-                size="small"
+          <DialogContent className={styles.modalContent}>
+            {fullScreenDialog && (
+              <Box
+                sx={{
+                  position: "fixed",
+                  top: "env(safe-area-inset-top, 12px)",
+                  right: "calc(env(safe-area-inset-right, 12px))",
+                  zIndex: 4000,
+                  background: "transparent",
+                  padding: "6px",
+                }}
               >
-                <CloseIcon fontSize="small" />
-              </IconButton>
-            </Box>             */}
+                <IconButton
+                  onClick={handleCloseModal}
+                  aria-label="Close tour preview"
+                  size="medium"
+                  sx={{
+                    backgroundColor: "rgba(0,0,0,0.65)",
+                    color: "#fff",
+                    borderRadius: "999px",
+                    padding: "6px",
+                    boxShadow: "0 6px 18px rgba(0,0,0,0.24)",
+                    backdropFilter: "blur(6px)",
+                    transition: "background 0.12s ease, transform 0.12s ease",
+                    '&:hover': {
+                      backgroundColor: "rgba(0,0,0,0.78)",
+                      transform: "translateY(-1px)",
+                    },
+                    '&:focus-visible': {
+                      outline: "3px solid rgba(255,255,255,0.9)",
+                      outlineOffset: "2px",
+                    },
+                  }}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            )}
             <Box className={styles.modalBody}>
               <iframe
                 src={selectedTour.embed_url}
