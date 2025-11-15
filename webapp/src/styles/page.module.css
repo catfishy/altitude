@@ -5,74 +5,15 @@
 
   --button-primary-hover: #383838;
   --button-secondary-hover: #f2f2f2;
-
+  color-scheme: light;
   display: grid;
   grid-template-rows: 20px 1fr 20px;
-  align-items: center;
+  align-items: start;
   justify-items: center;
   min-height: 100svh;
-  padding: 80px;
+  padding: 80px 80px;
   gap: 64px;
   font-family: var(--font-geist-sans);
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --gray-rgb: 255, 255, 255;
-    --gray-alpha-200: rgba(var(--gray-rgb), 0.145);
-    --gray-alpha-100: rgba(var(--gray-rgb), 0.06);
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-  }
-
-  .modalContent {
-    background: rgba(24, 24, 24, 0.95);
-    color: #ffffff;
-  }
-
-  .thumbnailPlaceholder {
-    color: rgba(var(--gray-rgb), 0.75);
-  }
-
-  .modalFullPageButton {
-    background: rgba(32, 32, 32, 0.85);
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  grid-row-start: 2;
-}
-
-.main ol {
-  font-family: var(--font-geist-mono);
-  padding-left: 0;
-  margin: 0;
-  font-size: 14px;
-  line-height: 24px;
-  letter-spacing: -0.01em;
-  list-style-position: inside;
-}
-
-.main li:not(:last-of-type) {
-  margin-bottom: 8px;
-}
-
-.main code {
-  font-family: inherit;
-  background: var(--gray-alpha-100);
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.ctas {
-  display: flex;
-  gap: 16px;
 }
 
 .tourCard {
@@ -80,20 +21,38 @@
   flex-direction: column;
   gap: 12px;
   align-items: center;
+  background: var(--background, #ffffff);
+  max-width: 400px;
+  /* border-radius: 12px; */
+  /* subtle elevation */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
 }
 
 .thumbnailWrapper {
   width: 100%;
-  border-radius: 16px;
+  /* border-radius: 16px; */
   overflow: hidden;
   display: block;
+}
+
+.customerLogo {
+  display: block;
+  /* max-width: 360px; */
+  width: 100%;
+  /* margin: 0 auto 16px; */
+}
+
+.customerContent {
+  margin-bottom: 32px;
 }
 
 .thumbnailButton {
   width: 100%;
   border: none;
   padding: 0;
-  border-radius: 16px;
+  /* border-radius: 16px; */
   overflow: hidden;
   background: var(--gray-alpha-100);
   cursor: pointer;
@@ -131,18 +90,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 16px;
   background: rgba(0, 0, 0, 0.65);
   z-index: 1000;
 }
 
 .modalContent {
   position: relative;
-  width: min(960px, 100%);
+  width: 80vw;
+  height: 80vh;
   background: var(--background, #ffffff);
   color: var(--foreground, #13161a);
-  border-radius: 16px;
-  padding: 48px 24px 24px;
+  border-radius: 8px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
 }
 
@@ -182,10 +141,8 @@
 }
 
 .modalBody {
-  position: relative;
-  width: 100%;
-  padding-top: 56.25%;
-  border-radius: 12px;
+  width: 80vw;
+  height: 80vh;
   overflow: hidden;
 }
 
@@ -265,6 +222,12 @@ a.secondary {
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
   }
 
+  /* increase elevation on hover for the card itself */
+  .tourCard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.14), 0 6px 12px rgba(0,0,0,0.08);
+  }
+
 }
 }
 
@@ -302,18 +265,7 @@ a.secondary {
     justify-content: center;
   }
 
-  .tourGrid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-  }
-
   .modalContent {
     padding: 40px 16px 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
   }
 }

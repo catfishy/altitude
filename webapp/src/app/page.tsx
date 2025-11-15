@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   CircularProgress,
-  IconButton,
   Box,
   Card,
   CardActionArea,
@@ -12,8 +11,11 @@ import {
   Typography,
   Grid,
 } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 // import OpenInFullIcon from "@mui/icons-material/OpenInFull";
-import CloseIcon from "@mui/icons-material/Close";
+// import CloseIcon from "@mui/icons-material/Close";
 import styles from "styles/page.module.css";
 import useCurrentUser from "hooks/useCurrentUser";
 import useCustomerTours, { TourDocument } from "hooks/useCustomerTours";
@@ -74,7 +76,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className={styles.page}>
+      <div className={styles.page} style={{ alignItems: "center", justifyContent: "center", minHeight: "100vh", display: "flex" }}>
         <main className={styles.main}>
           <CircularProgress />
         </main>
@@ -86,9 +88,23 @@ export default function Home() {
     <>
       <div className={styles.page}>
         <main className={styles.main}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} className={styles.customerContent}>
             <Grid size={{xs: 12}} textAlign="center">
-              <Typography variant="h4" gutterBottom>{customer.name} Virtual Tours</Typography>
+              {customer.logo_url && (
+                <div className={styles.customerLogo}>
+                  <Image
+                    src={customer.logo_url}
+                    alt={customer.name ? `${customer.name} logo` : 'Customer logo'}
+                    width={360}
+                    height={240}
+                    style={{ objectFit: 'scale-down', borderRadius: 8 }}
+                    priority
+                    unoptimized
+                  />
+                </div>
+              )}
+              <Typography variant="h4">{customer.name} Virtual Tours</Typography>
+              <Typography variant="subtitle1" gutterBottom sx={{marginTop: 1}}>{customer.description}</Typography>
             </Grid>
           </Grid>
           <Grid container spacing={2}>
@@ -98,7 +114,7 @@ export default function Home() {
               )?.thumbnail_url;
               const cardKey = tour.id ?? `tour-${index}`;
               return (
-                <Grid size={{xs: 12, sm: 4, md: 3 }} key={cardKey}>
+                <Grid size={{xs: 12, sm: 6, md: 3 }} key={cardKey} display="flex" justifyContent="center">
                   <Card className={styles.tourCard}>
                     <CardActionArea onClick={() => handleThumbnailClick(tour)}>
                       {thumbnailUrl ? (
@@ -145,26 +161,18 @@ export default function Home() {
       </div>
 
       {selectedTour && selectedTour.embed_url && (
-        <div
-          className={styles.modalOverlay}
-          role="dialog"
-          aria-modal="true"
-          aria-label={selectedTour.name ?? "Tour preview"}
-          onClick={handleCloseModal}
+        <Dialog
+          open={true}
+          onClose={handleCloseModal}
+          aria-labelledby="tour-preview-title"
+          fullWidth
+          maxWidth="lg"
         >
-          <div
-            className={styles.modalContent}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Box className={styles.modalActions} sx={{ mr: 1 }}>
-              {/* <IconButton
-                onClick={handleOpenFullPage}
-                aria-label="Open tour in full page"
-                color="inherit"
-                size="small"
-              >
-                <OpenInFullIcon fontSize="small" />
-              </IconButton> */}
+          <DialogTitle id="tour-preview-title" sx={{ display: 'none' }}>
+            {selectedTour.name ?? 'Tour preview'}
+          </DialogTitle>
+          <DialogContent>
+            {/* <Box sx={{ mr: 1 }}>
               <IconButton
                 onClick={handleCloseModal}
                 aria-label="Close tour preview"
@@ -173,7 +181,7 @@ export default function Home() {
               >
                 <CloseIcon fontSize="small" />
               </IconButton>
-            </Box>
+            </Box>             */}
             <Box className={styles.modalBody}>
               <iframe
                 src={selectedTour.embed_url}
@@ -183,8 +191,8 @@ export default function Home() {
                 allowFullScreen
               />
             </Box>
-          </div>
-        </div>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

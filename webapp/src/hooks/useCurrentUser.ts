@@ -9,6 +9,7 @@ export type AltitudeUser = {
   name: string | null;
   customer_id: string | null;
   email: string;
+  role: string | null;
 };
 
 
@@ -37,9 +38,10 @@ const useCurrentUser = () => {
 
         const loadedUser: AltitudeUser = {
           id: firebaseUser.uid,
-          name: null,
           email: firebaseUser.email ?? "",
           customer_id: null,
+          name: null,
+          role: null,
         };
 
         const ref = doc(db, "users", firebaseUser.uid);
@@ -48,7 +50,8 @@ const useCurrentUser = () => {
           (snap) => {
             if (snap.exists()) {
               const firestoreUserData = snap.data();
-              loadedUser.customer_id = firestoreUserData.customer_id || "";
+              loadedUser.customer_id = firestoreUserData.customer_id || null
+              loadedUser.role = firestoreUserData.role || null;
               loadedUser.name =
                 firestoreUserData.first_name && firestoreUserData.last_name
                   ? `${firestoreUserData.first_name} ${firestoreUserData.last_name}`
