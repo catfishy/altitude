@@ -35,7 +35,13 @@ export default function AltitudeToolbar() {
               href="https://www.ahrpc.ca/"
               target="_blank"
               rel="noopener noreferrer"
-              sx={{ color: "#000000", fontWeight: 600 }}
+              sx={{
+                color: "#000000",
+                fontWeight: 600,
+                display: "flex",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
             >
               About AHRPC
             </Button>
@@ -44,14 +50,24 @@ export default function AltitudeToolbar() {
                 href={customer.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                sx={{ color: "#000000" }}
+                sx={{
+                  color: "#000000",
+                  display: "flex",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
               >
                 {customer.name} Homepage
               </Button>
             )}
             <Button
               onClick={handleLogout}
-              sx={{ color: "#000000" }}
+              sx={{
+                color: "#000000",
+                display: "flex",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
             >
               Log Out
             </Button>
