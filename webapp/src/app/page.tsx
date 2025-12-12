@@ -10,16 +10,9 @@ import {
   CardContent,
   Typography,
   Grid,
-  IconButton,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import CloseIcon from "@mui/icons-material/Close";
-// import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import styles from "styles/page.module.css";
+import TourDialog from "@/components/TourDialog";
 import useCurrentUser from "hooks/useCurrentUser";
 import useCustomerTours, { TourDocument } from "hooks/useCustomerTours";
 import useTourThumbnails from "@/hooks/useTourThumbnails";
@@ -76,13 +69,6 @@ export default function Home() {
       router.replace("/login");
     }
   }, [router, user, userLoading]);
-
-  // detect small screens to show the dialog full-screen
-  const theme = useTheme();
-  const isSmallWidth = useMediaQuery(theme.breakpoints.down("sm"));
-  // treat phones in landscape (short viewport height) as small screens too
-  const isPhoneLandscape = useMediaQuery("(orientation: landscape) and (max-height: 600px)");
-  const fullScreenDialog = isSmallWidth || isPhoneLandscape;
 
   if (loading) {
     return (
@@ -170,68 +156,11 @@ export default function Home() {
         <footer className={styles.footer}></footer>
       </Box>
 
-      {selectedTour && selectedTour.embed_url && (
-        <Dialog
-          open={true}
-          onClose={handleCloseModal}
-          aria-labelledby="tour-preview-title"
-          fullWidth
-          fullScreen={fullScreenDialog}
-          maxWidth={fullScreenDialog ? false : "lg"}
-        >
-          <DialogTitle id="tour-preview-title" sx={{ display: 'none' }}>
-            {selectedTour.name ?? 'Tour preview'}
-          </DialogTitle>
-          <DialogContent className={styles.modalContent}>
-            {fullScreenDialog && (
-              <Box
-                sx={{
-                  position: "fixed",
-                  top: "env(safe-area-inset-top, 12px)",
-                  right: "calc(env(safe-area-inset-right, 12px))",
-                  zIndex: 4000,
-                  background: "transparent",
-                  padding: "6px",
-                }}
-              >
-                <IconButton
-                  onClick={handleCloseModal}
-                  aria-label="Close tour preview"
-                  size="medium"
-                  sx={{
-                    backgroundColor: "rgba(0,0,0,0.65)",
-                    color: "#fff",
-                    borderRadius: "999px",
-                    padding: "6px",
-                    boxShadow: "0 6px 18px rgba(0,0,0,0.24)",
-                    backdropFilter: "blur(6px)",
-                    transition: "background 0.12s ease, transform 0.12s ease",
-                    '&:hover': {
-                      backgroundColor: "rgba(0,0,0,0.78)",
-                      transform: "translateY(-1px)",
-                    },
-                    '&:focus-visible': {
-                      outline: "3px solid rgba(255,255,255,0.9)",
-                      outlineOffset: "2px",
-                    },
-                  }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            )}
-            <Box className={styles.modalBody}>
-              <iframe
-                src={selectedTour.embed_url}
-                title={selectedTour.name ?? "Tour preview"}
-                className={styles.modalIframe}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </Box>
-          </DialogContent>
-        </Dialog>
-      )}
+      <TourDialog
+        tour={selectedTour}
+        open={!!selectedTour && !!selectedTour.embed_url}
+        onClose={handleCloseModal}
+      />
     </>
   );
 }

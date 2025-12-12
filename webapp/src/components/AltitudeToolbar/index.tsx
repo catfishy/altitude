@@ -4,8 +4,10 @@ import { useCallback } from "react";
 import { Toolbar, Box, AppBar, Button, Stack } from "@mui/material";
 import { auth } from "@/util/firebase";
 import useCustomer from "@/hooks/useCustomer";
+import useCurrentUser from "@/hooks/useCurrentUser";
 
 export default function AltitudeToolbar() {
+  const { user } = useCurrentUser();
   const { customer } = useCustomer();
   const handleLogout = useCallback(async () => {
     try {
@@ -32,12 +34,23 @@ export default function AltitudeToolbar() {
           <Stack direction="row" spacing={2} alignItems="center">
             <Button
               component="a"
+              href="/"
+              sx={{
+                color: "#000000",
+                display: "flex",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
+            >
+              Tours
+            </Button>            
+            <Button
+              component="a"
               href="https://www.ahrpc.ca/"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
                 color: "#000000",
-                fontWeight: 600,
                 display: "flex",
                 justifyContent: "center",
                 textAlign: "center",
@@ -58,6 +71,19 @@ export default function AltitudeToolbar() {
                 }}
               >
                 {customer.name} Homepage
+              </Button>
+            )}
+            {user?.role === "admin" && (
+              <Button
+                href="/create-user"
+                sx={{
+                  color: "#000000",
+                  display: "flex",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
+              >
+                Create New User
               </Button>
             )}
             <Button

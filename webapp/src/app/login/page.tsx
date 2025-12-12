@@ -49,11 +49,13 @@ export default function Login() {
   const login = useCallback(async () => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(
+      const userCredential = await signInWithEmailAndPassword(
         auth,
         formState.email,
         formState.password
       );
+      const token = await userCredential.user.getIdToken();
+      document.cookie = `token=${token}; path=/`;
       console.log("Login successful");
       window.location.href = '/';
     } catch (e) {

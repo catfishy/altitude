@@ -37,4 +37,4 @@ const functions = region
   ? getFunctions(firebaseApp, region)
   : getFunctions(firebaseApp);
 
-export { firebaseApp, auth, db, functions, storage };
+export { firebaseApp, firebaseConfig, auth, db, functions, storage };
